@@ -5,18 +5,25 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import Http404, JsonResponse
 from rest_framework.decorators import api_view
-
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
 from rest_framework.parsers import JSONParser
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
+from django.http import JsonResponse
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
-# Create your views here.
 from django.shortcuts import render, get_object_or_404
 from django.shortcuts import redirect
 from django.utils import timezone
 from django.contrib.auth.models import User
-from .serializers import PostSerializer, BlogSerializer, LoginSerializer, RegisterSerializer
+from .serializers import PostSerializer, BlogSerializer, LoginSerializer, RegisterSerializer, UserPostSerializer
 
-from .models import RegisterUser,Sample,Blog,Post, LoginUser, RegisterUser
+
+from .models import RegisterUser,Sample,Blog,Post, LoginUser, RegisterUser, UserPost
 
 
 # Create your views here.
@@ -129,7 +136,6 @@ class UserPostsView(APIView):
 
 
 
-
 class UserBlogView(APIView):
     
     def get(self, request, id):
@@ -166,20 +172,85 @@ class UserBlogsView(APIView):
         return Response(serializer.data)
 
 
-class LoginUserView(APIView):
+# class LoginUserView(APIView):
+#     @csrf_exempt
+#     def get(self, request,username,password):
+#         post = RegisterUser.objects.all()
+#         first = post.filter(username=username)
+#         second = post.filter(password=password)
+#         if(second)
+#         serializer = BlogSerializer(post, many=True)
+#         return Response(serializer.data)
+
+# def contact(request):
+#     if request.method == 'POST'
+#     form = SignUpForm(request.P)
+
+
+class UserPostView(APIView):
+    
+    def get(self, request, id):
+        post = UserPost.objects.get(id=id)
+        data = UserPostSerializer(post).data
+        return Response(data)
     @csrf_exempt
-    def get(self, request,username,password):
-        post = RegisterUser.objects.all()
-        first = post.filter(username=username)
-        second = post.filter(password=password)
-        if(second)
-        serializer = BlogSerializer(post, many=True)
+    def post(self, request):
+        data = JSONParser().parse(request)
+        serializer = UserPostSerializer(data=data)
+        if(serializer.is_valid()): 
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+    @csrf_exempt
+    def patch(self, request, id, format=None):
+        post = UserPost.objects.get(id=id)
+        serializer = UserPostSerializer(post, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+    @csrf_exempt
+    def delete(self, request, id, format=None):
+        post = UserPost.objects.get(id=id)
+        post.delete()
+        return Response(status=204)
+    
+class UserPostsView(APIView):
+    @csrf_exempt
+    def get(self, request):
+        post = UserPost.objects.all()
+        serializer = UserPostSerializer(post, many=True)
         return Response(serializer.data)
 
 
 
 
 
+@api_view(['POST'])
+def api_login(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+    user = authenticate(request, username=username, password=password)
 
+    if user is not None:
+        login(request, user)
+        return Response({'detail': 'Login successful'})
+    else:
+        return Response({'detail': 'Invalid credentials'}, status=401)
+
+@api_view(['POST'])
+def api_logout(request):
+    logout(request)
+    return Response({'detail': 'Logout successful'})
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def api_user_details(request):
+    return Response({
+        'username': request.user.username,
+        'email': request.user.email,
+        'password': request.user.password
+        # Add more user details as needed
+    })
 
     

@@ -1,10 +1,11 @@
 from django.db import models
 from django.utils import timezone
 from django.conf import settings 
-
+from django.contrib.auth.models import User 
+from django.contrib.auth.models import AbstractUser
 # Create your models here.
 class RegisterUser(models.Model):
-    user= models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user= models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,null= True, blank = True )
     username = models.CharField(max_length=200)
     password = models.CharField(max_length=100)
     published_date = models.DateTimeField(blank=True, null=True)
@@ -45,10 +46,16 @@ class Post(models.Model):
     caption = models.CharField(max_length = 200)
     likes = models.IntegerField()
     
-    
-    
-    
-    
-    
-        
 
+class UserPost(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    public_id = models.CharField(max_length=40)
+    comments = models.JSONField( encoder=None, decoder=None)
+    likes = models.IntegerField()
+    caption = models.CharField(max_length=300)
+    format = models.CharField(max_length=50, null=True, blank = True)
+
+
+
+    
+    

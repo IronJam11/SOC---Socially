@@ -1,4 +1,4 @@
-from .models import Post, Blog, LoginUser, RegisterUser
+from .models import Post, Blog, LoginUser, RegisterUser, UserPost
 from rest_framework import serializers
 
 
@@ -17,8 +17,12 @@ class LoginSerializer(serializers.ModelSerializer):
         model = LoginUser
         fields="__all__"
 
-class RegisterSerializer(APIView):
+class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = RegisterUser
         fields = "__all__"
 
+class  UserPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserPost
+        fields = "__all__"

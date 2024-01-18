@@ -12,7 +12,14 @@ urlpatterns = [
     # path("blogs/new/",views.blog_edit, name ="blog_edit"),
     path("blogpage/",views.UserBlogsView.as_view()),
     path("newblog/", views.UserBlogView.as_view()),
-    path("blog/<int:id>/", views.UserBlogView.as_view())
+    path("blog/<int:id>/", views.UserBlogView.as_view()),
+    path("post/",views.UserPostsView.as_view()),
+    path("newpost/", views.UserPostView.as_view()),
+    path("post/<int:id>/", views.UserPostView.as_view()),
+    path('api/login/', views.api_login, name='api-login'),
+    path('api/logout/', views.api_logout, name='api-logout'),
+    path('api/user-details/',views.api_user_details, name='api-user-details'),
+
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

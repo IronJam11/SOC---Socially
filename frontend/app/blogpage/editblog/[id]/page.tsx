@@ -2,6 +2,7 @@
 
 import axios from "axios"
 import CreatePost from "./blog"
+import Header from "@/app/components/header";
 
 export default  async function NewBlog({params}:{params:any})
 {
@@ -24,6 +25,7 @@ export default  async function NewBlog({params}:{params:any})
     }
 
     return <>
+    <Header />
     <CreatePost handleSubmit={post} blog ={blog.data} />
     </>
 }

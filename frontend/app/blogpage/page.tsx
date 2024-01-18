@@ -1,15 +1,17 @@
 'use client'
 import React from "react";
 import axios from "axios";
+import Header from "../components/header";
 export default async function Blogpage()
 {
     const response =  await axios.get("http://localhost:8000/blogpage/");
     const info = response.data;
     return (<>
+    <Header />
     
     <div>
       <h1>BLOG PAGE</h1>
-      <button onClick={()=>
+      <button className="yellow" onClick={()=>
       {
         window.location.href = "/blogpage/newblog"
       }}> Create a new blog </button>
@@ -20,7 +22,7 @@ export default async function Blogpage()
            Title :-  {item.title} <br/>
            Type :-  {item.type} <br/>
            Content :- {item.content} <br/>
-          <button onClick={async () => 
+          <button className="delete-button" onClick={async () => 
           {
             
             const response = await axios.delete(`http://localhost:8000/blog/${item.id}/`)
@@ -35,7 +37,7 @@ export default async function Blogpage()
            
            
            
-           <button onClick = {()=>
+           <button  className = "edit-button"onClick = {()=>
           {
             window.location.href = `/blogpage/editblog/${item.id}/`;
 
